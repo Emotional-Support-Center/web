@@ -3,7 +3,6 @@ import '../css/TherapistPopup.css';
 import { db, storage } from '../firebase/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
     const [form, setForm] = useState({
@@ -52,7 +51,7 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
 
     const handleSubmit = async () => {
         if (!form.firstName.trim() || !form.lastName.trim()) {
-            alert("You should enter your name.");
+            alert("First Name and Last Name are required.");
             return;
         }
 
@@ -93,6 +92,33 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
         }
     };
 
+    const handleContinueLater = async () => {
+        if (!form.firstName.trim() || !form.lastName.trim()) {
+            alert("First Name and Last Name are required to continue later.");
+            return;
+        }
+
+        const partialData = {
+            firstName: form.firstName.trim(),
+            lastName: form.lastName.trim(),
+            showWelcomePopup: false,
+        };
+
+        if (form.fee.trim()) partialData.fee = form.fee.trim();
+        if (form.about.trim()) partialData.about = form.about.trim();
+        if (form.specialties.trim()) partialData.specialties = form.specialties.trim();
+
+        try {
+            await setDoc(doc(db, 'therapists', userId), partialData, { merge: true });
+
+            onSave();
+            onClose();
+        } catch (err) {
+            console.error("Error updating partial therapist info:", err);
+            alert("Failed to save partial data.");
+        }
+    };
+
     return (
         <div className="popup-backdrop">
             <div className="popup-form">
@@ -100,12 +126,12 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
                 <p>Please fill in your information to get started.</p>
 
                 <div className="form-group">
-                    <label>First Name</label>
+                    <label>First Name *</label>
                     <input name="firstName" value={form.firstName} onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
-                    <label>Last Name</label>
+                    <label>Last Name *</label>
                     <input name="lastName" value={form.lastName} onChange={handleChange} />
                 </div>
 
@@ -123,6 +149,7 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
                     <label>Speciality</label>
                     <input name="specialties" value={form.specialties} onChange={handleChange} />
                 </div>
+
                 <div className="form-group">
                     <label>Profile Photo</label>
                     <input type="file" accept="image/*" onChange={handleFileChange} />
@@ -135,7 +162,7 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
 
                 <div className="popup-buttons">
                     <button onClick={handleSubmit}>Save</button>
-                    <button onClick={onClose}>Continue Later</button>
+                    <button onClick={handleContinueLater}>Continue Later</button>
                 </div>
             </div>
         </div>
