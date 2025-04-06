@@ -1,0 +1,230 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #e0f2ff, #ffffff);
+}
+
+.sidebar-container {
+    width: 200px;
+    height: calc(100vh - 70px);
+    background-color: #ffffff;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    padding: 30px 0;
+    position: fixed;
+    left: 0;
+    top: 50px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* sola hizalı */
+    gap: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+    border-radius: 0 20px 20px 0;
+}
+
+.sidebar-menu li:hover {
+    background-color: #f0f4ff;
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.sidebar-menu li .icon {
+    font-size: 18px;
+    color: #3b82f6;
+    min-width: 20px;
+}
+
+.sidebar-menu li span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.dashboard-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.headbar {
+    background-color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: #4481eb;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.profile-pic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4481eb;
+}
+
+.dropdown {
+    cursor: pointer;
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 35px;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    z-index: 99;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: #333;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-content button:hover {
+    background-color: #f0f0f0;
+}
+
+.dashboard-content {
+    padding: 30px;
+}
+
+.dashboard-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.calendar-wrapper {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: fit-content;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.headbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 15px 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.headbar-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4481eb;
+}
+
+.profile-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    color: #333;
+}
+
+.dropdown-icon {
+    font-size: 12px;
+    margin-left: 6px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    padding: 5px 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f0f0f0;
+}

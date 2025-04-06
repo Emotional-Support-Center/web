@@ -3,13 +3,24 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 
-export const registerPatient = async (email, password, extraData) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    await setDoc(doc(db, "patients", user.uid), {
-        email,
-        ...extraData
-    });
+export const registerPatient = async (email, password) => {
+    const credentials = {
+        username: email,
+        password: password,
+    };
+
+    fetch(`${process.env.REACT_APP_SERVER_URL}/signup`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
 };
 
 
@@ -18,6 +29,8 @@ export const registerTherapist = async (email, password, extraData) => {
     const user = userCredential.user;
     await setDoc(doc(db, "therapists", user.uid), {
         email,
+        showWelcomePopup: true,
+        verified:false,
         ...extraData
     });
 };

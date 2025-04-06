@@ -1,0 +1,145 @@
+.calendar-container {
+    max-height: 100%;
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.calendar-controls {
+    display: flex;
+    gap: 12px;
+}
+
+.calendar-controls select,
+.calendar-controls button {
+    padding: 10px 16px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.calendar-controls button {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+
+.calendar-controls button:hover {
+    background-color: #2563eb;
+}
+
+.calendar-year {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.calendar-year span {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.calendar-year button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-year button:hover {
+    background-color: #2563eb;
+}
+
+.calendar-days-of-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    font-size: 16px;
+}
+
+.calendar-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+}
+
+.calendar-day {
+    background-color: white;
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+    height: 100px;
+    position: relative;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border 0.2s;
+}
+
+.calendar-day:hover {
+    border: 2px solid #3b82f6;
+}
+
+.calendar-day-number {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+}
+
+.today {
+    background-color: #3b82f6;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    left: 12px;
+}
+
+.new-month-label {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ccc;
+}

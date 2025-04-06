@@ -3,6 +3,9 @@ import { registerPatient, registerTherapist, loginUser } from "../services/authS
 import "../css/AuthPage.css";
 import therapistImg from "../assets/therapist.png";
 import patientImg from "../assets/medical.png";
+import {useLocation} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 const AuthPage = () => {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -10,8 +13,18 @@ const AuthPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [popup, setPopup] = useState({ show: false, message: "", type: "" });
+    const [fadeState, setFadeState] = useState("fade-in");
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const urlRole = params.get("role");
+    const navigate=useNavigate()
 
-    const [fadeState, setFadeState] = useState("fade-in"); // Geçiş yönetimi
+    useEffect(() => {
+        if (urlRole === "patient" || urlRole === "therapist") {
+            setRole(urlRole);
+            setIsSignUp(true);
+        }
+    }, [urlRole]);
 
     const resetFields = () => {
         setEmail("");
@@ -28,7 +41,7 @@ const AuthPage = () => {
         try {
             if (isSignUp) {
                 if (role === "patient") {
-                    await registerPatient(email, password, {});
+                    await registerPatient(email, password);
                 } else {
                     await registerTherapist(email, password, {});
                 }
@@ -36,8 +49,11 @@ const AuthPage = () => {
             } else {
                 await loginUser(email, password, role);
                 showPopup("You have successfully logged in!", "success");
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 1000);
+                resetFields();
             }
-            resetFields();
         } catch (err) {
             const msg = err.message.includes("auth")
                 ? "Incorrect email or password. Please try again."
