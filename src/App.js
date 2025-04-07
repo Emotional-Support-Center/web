@@ -6,6 +6,7 @@ import { AuthProvider } from './services/authContext';
 import Settings from "./routes/TherapistSettings";
 import Appointments from "./routes/TherapistAppointments";
 import TherapistPage from "./routes/TherapistPage";
+import AdminPage from "./routes/AdminPage";
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/appointments" element={<Appointments />} />
                     <Route path="/mypage" element={<TherapistPage />}/>
+                    <Route path="/adminPanel" element={<AdminPage />}/>
                 </Routes>
             </Router>
         </AuthProvider>
