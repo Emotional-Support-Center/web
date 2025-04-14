@@ -1,0 +1,100 @@
+.comments-wrapper {
+    margin-top: 40px;
+}
+
+.comments-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.comment-container {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+}
+
+.comment {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.avatar {
+    background-color: #ddd;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+    flex-shrink: 0;
+}
+
+.comment-body {
+    flex: 1;
+}
+
+.comment-heading {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.username {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+}
+
+.date {
+    font-size: 13px;
+    color: #999;
+}
+
+.comment-content {
+    font-size: 15px;
+    color: #444;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+    align-items: flex-start; /* Butonu sola hizalar */
+
+}
+
+.comment-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    margin-left: -80px;
+}
+
+.comment-submit-btn {
+    padding: 8px 16px;
+    background-color: #4481eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-left: -80px;
+}
+
+.comment-submit-btn:hover {
+    background-color: #336ed8;
+}

@@ -1,0 +1,63 @@
+.mytherapists-container {
+    padding: 30px 50px;
+    margin-left: 200px;
+    margin-top: 10px;
+    width: calc(100% - 200px);
+    box-sizing: border-box;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.therapist-card,
+.appointment-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.therapist-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.therapist-info img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.therapist-info h4 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 500;
+    color: #222;
+}
+
+.therapist-actions button {
+    background-color: #4481eb;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.therapist-actions button:hover {
+    background-color: #336fd1;
+}

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../firebase/firebase";
@@ -9,6 +8,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [userData, setUserData] = useState(null);
+    const [userRole, setUserRole] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -16,19 +16,34 @@ export const AuthProvider = ({ children }) => {
             setCurrentUser(user);
             if (user) {
                 try {
-                    const docRef = doc(db, 'therapists', user.uid);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        setUserData(docSnap.data());
+                    // First, check if user is a therapist
+                    const therapistRef = doc(db, 'therapists', user.uid);
+                    const therapistSnap = await getDoc(therapistRef);
+                    if (therapistSnap.exists()) {
+                        setUserData(therapistSnap.data());
+                        setUserRole("therapist");
+                        setLoading(false);
+                        return;
+                    }
+
+                    // If not a therapist, check if user is a patient
+                    const patientRef = doc(db, 'patients', user.uid);
+                    const patientSnap = await getDoc(patientRef);
+                    if (patientSnap.exists()) {
+                        setUserData(patientSnap.data());
+                        setUserRole("patient");
                     } else {
                         setUserData(null);
+                        setUserRole(null);
                     }
                 } catch (err) {
-                    console.error("Error fetching therapist info:", err);
+                    console.error("Error fetching user info:", err);
                     setUserData(null);
+                    setUserRole(null);
                 }
             } else {
                 setUserData(null);
+                setUserRole(null);
             }
             setLoading(false);
         });
@@ -41,6 +56,7 @@ export const AuthProvider = ({ children }) => {
             await signOut(auth);
             setCurrentUser(null);
             setUserData(null);
+            setUserRole(null);
             window.location.href = "/auth";
         } catch (error) {
             console.error("Logout error:", error);
@@ -48,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ currentUser, userData, setUserData, handleLogout }}>
+        <AuthContext.Provider value={{ currentUser, userData, userRole, setUserData, handleLogout }}>
             {!loading && children}
         </AuthContext.Provider>
     );

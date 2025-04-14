@@ -5,23 +5,13 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, auth, storage } from "../firebase/firebase";
 import { useAuth } from "../services/authContext";
 import "../css/TherapistSettings.css";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
-const Settings = () => {
+const PatientSettings = () => {
     const { currentUser, userData, setUserData } = useAuth();
-
     const [form, setForm] = useState({
         firstName: "",
         lastName: "",
-        feeIndividual: "",
-        feeGroup: "",
-        languages: "",
-        location: "",
-        specialties: "",
-        about: "",
-        verified: false,
         photo: null,
-        certificate: null,
     });
 
     const [editable, setEditable] = useState(false);
@@ -31,15 +21,7 @@ const Settings = () => {
             setForm({
                 firstName: userData.firstName || "",
                 lastName: userData.lastName || "",
-                feeIndividual: userData.feeIndividual || "",
-                feeGroup: userData.feeGroup || "",
-                languages: userData.languages || "",
-                location: userData.location || "",
-                specialties: userData.specialties || "",
-                about: userData.about || "",
-                verified: userData.verified || false,
                 photo: null,
-                certificate: null,
             });
         }
     }, [userData]);
@@ -50,41 +32,23 @@ const Settings = () => {
     const handleFileChange = (e) =>
         setForm({ ...form, photo: e.target.files[0] });
 
-    const handleCertificateChange = (e) =>
-        setForm({ ...form, certificate: e.target.files[0] });
-
     const handleSave = async () => {
         try {
             let photoURL = userData?.photoURL || "";
-            let certificateURL = userData?.certificateURL || "";
 
             if (form.photo) {
-                const photoRef = ref(storage, `therapists/${currentUser.uid}/profile`);
+                const photoRef = ref(storage, `patients/${currentUser.uid}/profile`);
                 await uploadBytes(photoRef, form.photo);
                 photoURL = await getDownloadURL(photoRef);
             }
 
-            if (form.certificate) {
-                const certRef = ref(storage, `therapists/${currentUser.uid}/certificate`);
-                await uploadBytes(certRef, form.certificate);
-                certificateURL = await getDownloadURL(certRef);
-            }
-
-            const docRef = doc(db, "therapists", currentUser.uid);
             const updatedData = {
                 firstName: form.firstName.trim(),
                 lastName: form.lastName.trim(),
-                feeIndividual: form.feeIndividual.trim(),
-                feeGroup: form.feeGroup.trim(),
-                languages: form.languages.trim(),
-                location: form.location.trim(),
-                specialties: form.specialties.trim(),
-                about: form.about.trim(),
                 photoURL,
-                certificateURL,
             };
 
-            await updateDoc(docRef, updatedData);
+            await updateDoc(doc(db, "patients", currentUser.uid), updatedData);
             setUserData({ ...userData, ...updatedData });
             alert("Your information has been updated.");
             setEditable(false);
@@ -99,7 +63,7 @@ const Settings = () => {
         if (!confirmed) return;
 
         try {
-            await deleteDoc(doc(db, "therapists", currentUser.uid));
+            await deleteDoc(doc(db, "patients", currentUser.uid));
             await deleteUser(auth.currentUser);
             alert("Account deleted.");
             window.location.href = "/auth";
@@ -127,48 +91,8 @@ const Settings = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Individual Appointment Fee</label>
-                            <input name="feeIndividual" value={form.feeIndividual} onChange={handleChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Group Appointment Fee</label>
-                            <input name="feeGroup" value={form.feeGroup} onChange={handleChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Languages Spoken (comma separated)</label>
-                            <input name="languages" value={form.languages} onChange={handleChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Specialities (comma separated)</label>
-                            <input name="specialties" value={form.specialties} onChange={handleChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Location</label>
-                            <input name="location" value={form.location} onChange={handleChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>About</label>
-                            <textarea name="about" value={form.about} onChange={handleChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Verified</label>
-                            {form.verified ? <FaCheckCircle color="green" size={20} /> : <FaTimesCircle color="red" size={20} />}
-                        </div>
-
-                        <div className="form-group">
                             <label>Profile Photo</label>
                             <input type="file" accept="image/*" onChange={handleFileChange} disabled={!editable} />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Certificate Upload (PDF or PNG)</label>
-                            <input type="file" accept="application/pdf,image/png" onChange={handleCertificateChange} disabled={!editable} />
                         </div>
 
                         <div className="settings-buttons">
@@ -185,7 +109,6 @@ const Settings = () => {
                                 Delete Account
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -193,4 +116,4 @@ const Settings = () => {
     );
 };
 
-export default Settings;
+export default PatientSettings;

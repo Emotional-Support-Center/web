@@ -5,6 +5,38 @@
     background: linear-gradient(to bottom, #e0f2ff, #ffffff);
     min-height: 100vh;
 }
+.therapist-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex: 1;
+    margin-left: -400px;
+    padding-top: 4px;
+}
+
+
+.top-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap; /* satıra sığsın */
+    gap: 12px;
+    margin-left: -50px;
+    margin-bottom: 8px;
+}
+
+.name-and-verification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.details-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: -300px;
+}
 
 /* === PROFIL === */
 .therapist-profile {
@@ -25,12 +57,6 @@
     border: 3px solid #e0e0e0;
 }
 
-.therapist-info h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: #222;
-}
 
 .verification-badge {
     display: inline-block;
@@ -153,4 +179,50 @@
 
 .book-btn:hover {
     background-color: #336fd1;
+}
+.day-bubble {
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    background-color: white;
+    margin: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.day-bubble:hover {
+    background-color: #e8f0ff;
+}
+
+.day-bubble.selected {
+    background-color: #4481eb;
+    color: white;
+    font-weight: 600;
+    border-color: #4481eb;
+}
+
+.slot-btn.selected-slot {
+    background-color: #4481eb;
+    color: white;
+    border: 1px solid #4481eb;
+}
+
+.rating-stars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.rating-text {
+    font-size: 14px;
+    margin-left: 6px;
+    color: #333;
+    font-weight: 500;
+}
+
+.reviews-section {
+    margin-top: 60px;
 }

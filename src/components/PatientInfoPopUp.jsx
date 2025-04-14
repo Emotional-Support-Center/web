@@ -1,35 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import '../css/TherapistPopup.css';
 import { db, storage } from '../firebase/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
+const PatientInfoPopup = ({ userId, onClose, onSave }) => {
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
         photo: null,
-        certificate: null,
     });
 
     const [photoURL, setPhotoURL] = useState('');
-    const [certificateURL, setCertificateURL] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
-            const docRef = doc(db, 'therapists', userId);
-            const docSnap = await getDoc(docRef);
+            const refDoc = doc(db, 'patients', userId);
+            const docSnap = await getDoc(refDoc);
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 setForm({
                     firstName: data.firstName || '',
                     lastName: data.lastName || '',
                     photo: null,
-                    certificate: null,
                 });
                 setPhotoURL(data.photoURL || '');
-                setCertificateURL(data.certificateURL || '');
             }
         };
         fetchData();
@@ -41,57 +37,42 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
     const handleFileChange = (e) =>
         setForm({ ...form, photo: e.target.files[0] });
 
-    const handleCertificateChange = (e) =>
-        setForm({ ...form, certificate: e.target.files[0] });
-
     const handleSubmit = async () => {
         if (!form.firstName.trim() || !form.lastName.trim()) {
-            setErrorMessage("First Name and Last Name are required.");
+            setErrorMessage('First Name and Last Name are required.');
             return;
         }
-
         setErrorMessage('');
 
         try {
             let newPhotoURL = photoURL;
-            let newCertificateURL = certificateURL;
-
             if (form.photo) {
-                const photoRef = ref(storage, `therapists/${userId}/profile`);
+                const photoRef = ref(storage, `patients/${userId}/profile`);
                 await uploadBytes(photoRef, form.photo);
                 newPhotoURL = await getDownloadURL(photoRef);
-            }
-
-            if (form.certificate) {
-                const certRef = ref(storage, `therapists/${userId}/certificate`);
-                await uploadBytes(certRef, form.certificate);
-                newCertificateURL = await getDownloadURL(certRef);
             }
 
             const updatedData = {
                 firstName: form.firstName.trim(),
                 lastName: form.lastName.trim(),
                 photoURL: newPhotoURL,
-                certificateURL: newCertificateURL,
                 showWelcomePopup: false,
-                certificateMissing: !form.certificate && !newCertificateURL, // ⚠️ dışarı bilgi taşıyoruz
             };
 
-            await setDoc(doc(db, 'therapists', userId), updatedData, { merge: true });
-
-            onSave(updatedData); // dışarıya flag'li veri gönder
-            onClose(); // popup her durumda kapanır
+            await setDoc(doc(db, 'patients', userId), updatedData, { merge: true });
+            onSave(updatedData);
+            onClose();
         } catch (err) {
-            setErrorMessage("An error occurred while saving your data.");
-            console.error("Save error:", err);
+            console.error('Error saving patient info:', err);
+            setErrorMessage('Failed to save your information.');
         }
     };
 
     return (
         <div className="popup-backdrop">
             <div className="popup-form">
-                <h2>Welcome to Us!</h2>
-                <p>Please fill in your basic information to get started.</p>
+                <h2>Welcome!</h2>
+                <p>Please enter your details to get started.</p>
 
                 {errorMessage && <div className="error-banner">{errorMessage}</div>}
 
@@ -106,13 +87,8 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
                 </div>
 
                 <div className="form-group">
-                    <label>Profile Photo</label>
+                    <label>Profile Photo (optional)</label>
                     <input type="file" accept="image/*" onChange={handleFileChange} />
-                </div>
-
-                <div className="form-group">
-                    <label>Certificate Upload (PDF or PNG)</label>
-                    <input type="file" accept="application/pdf,image/png" onChange={handleCertificateChange} />
                 </div>
 
                 <div className="popup-buttons">
@@ -123,4 +99,4 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
     );
 };
 
-export default TherapistInfoPopup;
+export default PatientInfoPopup;

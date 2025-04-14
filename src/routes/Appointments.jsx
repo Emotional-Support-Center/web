@@ -1,20 +1,19 @@
 import React from "react";
-import HeadBarTherapist from "../components/therapistHeadBar";
-import LeftbarTherapist from "../components/therapistLeftBar";
 import Calendar from "../components/Calendar";
-import "../css/TherapistLayout.css";
+import "../css/Layout.css";
 import "../css/Calendar.css";
+import { useAuth } from "../services/authContext";
 
-const TherapistAppointments = () => {
+const Appointments = () => {
+    const { userRole } = useAuth();
+
     return (
         <div className="dashboard-layout">
-            <LeftbarTherapist />
             <div className="dashboard-main">
-                <HeadBarTherapist />
                 <div className="dashboard-content">
                     <h2 className="dashboard-title">Appointments</h2>
                     <div className="calendar-container">
-                        <Calendar />
+                        <Calendar isTherapist={userRole === "therapist"} />
                     </div>
                 </div>
             </div>
@@ -22,4 +21,4 @@ const TherapistAppointments = () => {
     );
 };
 
-export default TherapistAppointments;
+export default Appointments;
