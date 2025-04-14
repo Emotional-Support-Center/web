@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { deleteUser } from "firebase/auth";
+import {deleteUser, updatePassword} from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, auth, storage } from "../firebase/firebase";
 import { useAuth } from "../services/authContext";
@@ -25,7 +25,8 @@ const Settings = () => {
     });
 
     const [editable, setEditable] = useState(false);
-
+    const [showPasswordChange, setShowPasswordChange] = useState(false);
+    const [newPassword, setNewPassword] = useState("");
     useEffect(() => {
         if (userData) {
             setForm({
@@ -53,6 +54,22 @@ const Settings = () => {
     const handleCertificateChange = (e) =>
         setForm({ ...form, certificate: e.target.files[0] });
 
+    const handleChangePassword = async () => {
+        if (!newPassword || newPassword.length < 6) {
+            alert("Password must be at least 6 characters.");
+            return;
+        }
+
+        try {
+            await updatePassword(auth.currentUser, newPassword);
+            alert("Password successfully changed.");
+            setShowPasswordChange(false);
+            setNewPassword("");
+        } catch (err) {
+            console.error("Password update error:", err);
+            alert("Failed to change password. Please log in again.");
+        }
+    };
     const handleSave = async () => {
         try {
             let photoURL = userData?.photoURL || "";
@@ -185,7 +202,26 @@ const Settings = () => {
                                 Delete Account
                             </button>
                         </div>
-
+                        <h2 className="section-title">Change your password</h2>
+                        <div className="password-wrapper">
+                            {!showPasswordChange ? (
+                                <button className="password-btn" onClick={() => setShowPasswordChange(true)}>
+                                    Change Password
+                                </button>
+                            ) : (
+                                <div className="password-change-form">
+                                    <input
+                                        type="password"
+                                        placeholder="New Password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                    />
+                                    <button className="password-save-btn" onClick={handleChangePassword}>
+                                        Save Password
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

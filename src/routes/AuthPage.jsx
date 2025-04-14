@@ -5,7 +5,9 @@ import therapistImg from "../assets/therapist.png";
 import patientImg from "../assets/medical.png";
 import {useLocation} from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import { resetPassword } from "../services/authService";
+import {useAuth} from "../services/authContext";
+import { auth } from "../firebase/firebase";
 
 const AuthPage = () => {
     const [isSignUp, setIsSignUp] = useState(false);
@@ -18,7 +20,7 @@ const AuthPage = () => {
     const params = new URLSearchParams(location.search);
     const urlRole = params.get("role");
     const navigate=useNavigate()
-
+    const { setUserData, setCurrentUser } = useAuth();
     useEffect(() => {
         if (urlRole === "patient" || urlRole === "therapist") {
             setRole(urlRole);
@@ -29,6 +31,19 @@ const AuthPage = () => {
     const resetFields = () => {
         setEmail("");
         setPassword("");
+    };
+    const handleForgotPassword = async () => {
+        if (!email) {
+            showPopup("Please enter your email address first.", "error");
+            return;
+        }
+
+        try {
+            await resetPassword(email);
+            showPopup("Password reset email sent! Check your inbox.", "success");
+        } catch (err) {
+            showPopup(err.message, "error");
+        }
     };
 
     const showPopup = (message, type = "success") => {
@@ -45,13 +60,16 @@ const AuthPage = () => {
                 } else {
                     await registerTherapist(email, password, {});
                 }
-                showPopup("Registration successful! You can now log in.", "success");
+                showPopup("Registration successful! Please verify your email before logging in.", "success");
             } else {
-                await loginUser(email, password, role);
+                const { userData } = await loginUser(email, password, role);
                 showPopup("You have successfully logged in!", "success");
+                setUserData(userData);
+                setCurrentUser(auth.currentUser);
+
                 setTimeout(() => {
                     navigate("/dashboard");
-                }, 1000);
+                }, 1500);
                 resetFields();
             }
         } catch (err) {
@@ -61,6 +79,7 @@ const AuthPage = () => {
             showPopup(msg, "error");
         }
     };
+
 
     const toggleForm = (mode) => {
         setIsSignUp(mode);
@@ -164,6 +183,9 @@ const AuthPage = () => {
                                 required
                             />
                         </div>
+                        <p className="forgot-password" onClick={handleForgotPassword}>
+                            Forgot Password?
+                        </p>
 
                         <input
                             type="submit"

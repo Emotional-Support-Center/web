@@ -81,6 +81,13 @@ function App() {
                             </Layout>
                         </ProtectedRoute>
                     } />
+                    <Route path="/account/:id" element={
+                        <ProtectedRoute allowedRoles={["patient"]}>
+                            <Layout>
+                                <TherapistPage />
+                            </Layout>
+                        </ProtectedRoute>
+                    } />
 
                 </Routes>
             </Router>

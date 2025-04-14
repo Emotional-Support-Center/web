@@ -622,3 +622,13 @@ form.active-form {
 .fade-in {
     opacity: 1;
 }
+.forgot-password {
+    font-size: 14px;
+    color: #3b82f6;
+    margin-top: 8px;
+    cursor: pointer;
+    text-align: right;
+}
+.forgot-password:hover {
+    text-decoration: underline;
+}

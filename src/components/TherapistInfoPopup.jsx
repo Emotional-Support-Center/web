@@ -8,6 +8,13 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
     const [form, setForm] = useState({
         firstName: '',
         lastName: '',
+        feeIndividual: '',
+        feeGroup: '',
+        languages: '',
+        location: '',
+        specialties: '',
+        about: '',
+        verified: false,
         photo: null,
         certificate: null,
     });
@@ -15,6 +22,7 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
     const [photoURL, setPhotoURL] = useState('');
     const [certificateURL, setCertificateURL] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [certificateWarning, setCertificateWarning] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,6 +33,13 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
                 setForm({
                     firstName: data.firstName || '',
                     lastName: data.lastName || '',
+                    feeIndividual: data.feeIndividual || '',
+                    feeGroup: data.feeGroup || '',
+                    languages: data.languages || '',
+                    location: data.location || '',
+                    specialties: data.specialties || '',
+                    about: data.about || '',
+                    verified: data.verified || false,
                     photo: null,
                     certificate: null,
                 });
@@ -71,16 +86,23 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
             const updatedData = {
                 firstName: form.firstName.trim(),
                 lastName: form.lastName.trim(),
+                feeIndividual: form.feeIndividual.trim(),
+                feeGroup: form.feeGroup.trim(),
+                languages: form.languages.trim(),
+                location: form.location.trim(),
+                specialties: form.specialties.trim(),
+                about: form.about.trim(),
+                verified: false,
                 photoURL: newPhotoURL,
                 certificateURL: newCertificateURL,
                 showWelcomePopup: false,
-                certificateMissing: !form.certificate && !newCertificateURL, // ⚠️ dışarı bilgi taşıyoruz
             };
 
             await setDoc(doc(db, 'therapists', userId), updatedData, { merge: true });
 
-            onSave(updatedData); // dışarıya flag'li veri gönder
-            onClose(); // popup her durumda kapanır
+            setCertificateWarning(!newCertificateURL);
+            onSave?.();   // opsiyonel çağrı
+            onClose?.();  // popup hemen kapansın
         } catch (err) {
             setErrorMessage("An error occurred while saving your data.");
             console.error("Save error:", err);
@@ -94,26 +116,22 @@ const TherapistInfoPopup = ({ userId, onClose, onSave }) => {
                 <p>Please fill in your basic information to get started.</p>
 
                 {errorMessage && <div className="error-banner">{errorMessage}</div>}
+                {certificateWarning && (
+                    <div className="certificate-warning">
+                        To verify your profile, please upload your certificate from the <strong>Settings</strong> page.
+                    </div>
+                )}
 
-                <div className="form-group">
-                    <label>First Name *</label>
-                    <input name="firstName" value={form.firstName} onChange={handleChange} />
-                </div>
-
-                <div className="form-group">
-                    <label>Last Name *</label>
-                    <input name="lastName" value={form.lastName} onChange={handleChange} />
-                </div>
-
-                <div className="form-group">
-                    <label>Profile Photo</label>
-                    <input type="file" accept="image/*" onChange={handleFileChange} />
-                </div>
-
-                <div className="form-group">
-                    <label>Certificate Upload (PDF or PNG)</label>
-                    <input type="file" accept="application/pdf,image/png" onChange={handleCertificateChange} />
-                </div>
+                <div className="form-group"><label>First Name *</label><input name="firstName" value={form.firstName} onChange={handleChange} /></div>
+                <div className="form-group"><label>Last Name *</label><input name="lastName" value={form.lastName} onChange={handleChange} /></div>
+                <div className="form-group"><label>Fee (Individual)</label><input name="feeIndividual" value={form.feeIndividual} onChange={handleChange} /></div>
+                <div className="form-group"><label>Fee (Group)</label><input name="feeGroup" value={form.feeGroup} onChange={handleChange} /></div>
+                <div className="form-group"><label>Languages</label><input name="languages" value={form.languages} onChange={handleChange} /></div>
+                <div className="form-group"><label>Location</label><input name="location" value={form.location} onChange={handleChange} /></div>
+                <div className="form-group"><label>Specialties</label><input name="specialties" value={form.specialties} onChange={handleChange} /></div>
+                <div className="form-group"><label>About</label><textarea name="about" value={form.about} onChange={handleChange} /></div>
+                <div className="form-group"><label>Profile Photo</label><input type="file" accept="image/*" onChange={handleFileChange} /></div>
+                <div className="form-group"><label>Certificate Upload (PDF or PNG)</label><input type="file" accept="application/pdf,image/png" onChange={handleCertificateChange} /></div>
 
                 <div className="popup-buttons">
                     <button onClick={handleSubmit}>Save</button>

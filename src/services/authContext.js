@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
             setCurrentUser(user);
             if (user) {
                 try {
-                    // First, check if user is a therapist
+
                     const therapistRef = doc(db, 'therapists', user.uid);
                     const therapistSnap = await getDoc(therapistRef);
                     if (therapistSnap.exists()) {
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ currentUser, userData, userRole, setUserData, handleLogout }}>
+        <AuthContext.Provider value={{ currentUser,setCurrentUser, userData, userRole, setUserData, handleLogout }}>
             {!loading && children}
         </AuthContext.Provider>
     );

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TherapistInfoPopup from "../components/TherapistInfoPopup";
 import { useAuth } from "../services/authContext";
 import "../css/TherapistDashboard.css";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { approveAppointment, rejectAppointment } from "../services/appointmentService";
 
@@ -14,7 +14,9 @@ const TherapistDashboard = () => {
     const [patientMap, setPatientMap] = useState({});
 
     useEffect(() => {
-        if (userData?.showWelcomePopup) setShowPopup(true);
+        if (userData?.showWelcomePopup) {
+            setShowPopup(true);
+        }
     }, [userData]);
 
     useEffect(() => {
@@ -33,7 +35,6 @@ const TherapistDashboard = () => {
             const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setAppointments(list);
 
-            // Fetch patient data
             const ids = [...new Set(list.map(a => a.patientId))];
             const map = {};
             await Promise.all(ids.map(async (pid) => {
@@ -48,8 +49,9 @@ const TherapistDashboard = () => {
         fetchAppointments();
     }, [currentUser]);
 
-    const handlePopupSave = (updatedData) => {
-        setUserData(prev => ({ ...prev, ...updatedData }));
+    const handlePopupSave = async (updatedData) => {
+        await updateDoc(doc(db, "therapists", currentUser.uid), { showWelcomePopup: false });
+        setUserData(prev => ({ ...prev, ...updatedData, showWelcomePopup: false }));
         setShowPopup(false);
     };
 
@@ -64,22 +66,31 @@ const TherapistDashboard = () => {
             <div className="dashboard-main">
                 {showCertWarning && (
                     <div className="certificate-warning">
-                    <span>
-                        To verify your profile, please upload your certificate from the <strong>Settings</strong> page.
-                    </span>
+                        <span>
+                            To verify your profile, please upload your certificate from the <strong>Settings</strong> page.
+                        </span>
                         <button className="close-warning" onClick={closeCertWarning}>×</button>
                     </div>
                 )}
 
                 <div className="dashboard-content">
                     <div className="top-cards">
-                        <div className="card"><h3>${approved.length * (userData?.feeIndividual || 0)}</h3><p>Earnings</p></div>
-                        <div className="card"><h3>{appointments.length}</h3><p>Appointments</p></div>
-                        <div className="card"><h3>{[...new Set(appointments.map(a => a.patientId))].length}</h3><p>Patients</p></div>
+                        <div className="card">
+                            <h3>${approved.length * (userData?.feeIndividual || 0)}</h3>
+                            <p>Earnings</p>
+                        </div>
+                        <div className="card">
+                            <h3>{approved.length}</h3>
+                            <p>Appointments</p>
+                        </div>
+                        <div className="card">
+                            <h3>{[...new Set(approved.map(a => a.patientId))].length}</h3>
+                            <p>Patients</p>
+                        </div>
                     </div>
 
                     <div className="appointment-sections">
-                        <>
+                        <section>
                             <h2 className="section-title">Patient Requests</h2>
                             {pending.map((appt) => {
                                 const patient = patientMap[appt.patientId] || {};
@@ -90,8 +101,8 @@ const TherapistDashboard = () => {
                                             <div>
                                                 <span className="patient-name">{patient.firstName} {patient.lastName}</span><br />
                                                 <span className="appointment-info">
-                                                requested appointment on {appt.date}, {appt.time}
-                                            </span>
+                                                    requested appointment on {appt.date}, {appt.time}
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="request-buttons">
@@ -116,9 +127,9 @@ const TherapistDashboard = () => {
                                     </div>
                                 );
                             })}
-                        </>
+                        </section>
 
-                        <>
+                        <section>
                             <h2 className="section-title">Unpaid Appointments</h2>
                             {payPending.map((appt) => {
                                 const patient = patientMap[appt.patientId] || {};
@@ -128,17 +139,15 @@ const TherapistDashboard = () => {
                                             <img src={patient.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="Profile" />
                                             <div>
                                                 <span className="patient-name">{patient.firstName} {patient.lastName}</span><br />
-                                                <span className="appointment-info">
-                                                has unpaid appointment on {appt.date}
-                                            </span>
+                                                <span className="appointment-info">has unpaid appointment on {appt.date}</span>
                                             </div>
                                         </div>
                                     </div>
                                 );
                             })}
-                        </>
+                        </section>
 
-                        <>
+                        <section>
                             <h2 className="section-title">Current Appointments</h2>
                             {approved.map((appt) => {
                                 const patient = patientMap[appt.patientId] || {};
@@ -157,7 +166,7 @@ const TherapistDashboard = () => {
                                     </div>
                                 );
                             })}
-                        </>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -172,7 +181,6 @@ const TherapistDashboard = () => {
             )}
         </div>
     );
-
 };
 
 export default TherapistDashboard;
