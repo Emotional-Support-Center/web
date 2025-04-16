@@ -33,7 +33,8 @@ export default function Comments({ therapistId }) {
             user: {
                 userId: currentUser.uid,
                 name: userData.firstName,
-                surname: userData.lastName
+                surname: userData.lastName,
+                photoURL: userData.photoURL
             }
         };
         await addDoc(collection(db, "reviews"), newComment);
@@ -48,8 +49,9 @@ export default function Comments({ therapistId }) {
 
             <div className="comments-list">
                 {comments.map(comment => (
-                    <Comment key={comment.id} {...comment} />
+                    <Comment key={comment.id} {...comment} therapistId={therapistId} refreshComments={fetchComments} />
                 ))}
+
             </div>
 
             {!isOwnProfile && <NewComment handleSubmit={addComment} />}

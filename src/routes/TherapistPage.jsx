@@ -9,7 +9,7 @@ import {
     collection, query, where, getDocs, setDoc
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { createAppointment } from "../services/appointmentService";
+import {createAppointment} from "../services/appointmentService";
 
 const TherapistPage = () => {
     const { userData, userRole, currentUser } = useAuth();
@@ -20,6 +20,7 @@ const TherapistPage = () => {
     const [hoverRating, setHoverRating] = useState(0);
     const [userRating, setUserRating] = useState(null);
     const [availableDates, setAvailableDates] = useState([]);
+    const [availability, setAvailability] = useState({});
 
     const isViewingAnother = Boolean(id);
     const therapistData = isViewingAnother ? therapist : userData;
@@ -52,9 +53,12 @@ const TherapistPage = () => {
             const snap = await getDoc(ref);
             if (snap.exists()) {
                 const data = snap.data();
-                const todayStr = new Date().toISOString().split("T")[0];
-                const filtered = (data.available || []).filter(date => new Date(date) >= new Date(todayStr));
-                setAvailableDates(filtered.sort((a, b) => new Date(a) - new Date(b)));
+                const today = new Date().toISOString().split("T")[0];
+                const upcomingDates = Object.keys(data)
+                    .filter(date => new Date(date) >= new Date(today))
+                    .sort((a, b) => new Date(a) - new Date(b));
+                setAvailableDates(upcomingDates);
+                setAvailability(data);
             }
         };
 
@@ -74,6 +78,14 @@ const TherapistPage = () => {
         setSelectedDateIndex(index);
         setSelectedSlot(null);
     };
+
+    const resetSelection = () => {
+        setSelectedDateIndex(null);
+        setSelectedSlot(null);
+    };
+
+    const selectedDate = selectedDateIndex !== null ? availableDates[selectedDateIndex] : null;
+    const availableSlots = selectedDate ? availability[selectedDate]?.available || [] : [];
 
     const totalRating = therapistData?.rating || 0;
     const totalVotes = therapistData?.voteCount || 0;
@@ -105,8 +117,6 @@ const TherapistPage = () => {
         }
     };
 
-    const hours = Array.from({ length: 9 }, (_, i) => `${(9 + i).toString().padStart(2, '0')}:00`);
-
     return (
         <div className="dashboard-layout">
             <div className="dashboard-main">
@@ -122,11 +132,7 @@ const TherapistPage = () => {
                             <div className="top-info">
                                 <div className="name-and-verification">
                                     <h2>{`Dr. ${therapistData?.firstName || ""} ${therapistData?.lastName || ""}`}</h2>
-                                    <div
-                                        className={`verification-badge ${
-                                            therapistData?.verified ? "verified" : "not-verified"
-                                        }`}
-                                    >
+                                    <div className={`verification-badge ${therapistData?.verified ? "verified" : "not-verified"}`}>
                                         {therapistData?.verified ? "Verified" : "Not Verified"}
                                     </div>
                                 </div>
@@ -148,22 +154,16 @@ const TherapistPage = () => {
                                         />
                                     ))}
                                     <span className="rating-text">
-                  {totalRating.toFixed(1)}{" "}
+                    {totalRating.toFixed(1)}{" "}
                                         <span className="vote-count">({totalVotes} votes)</span>
-                </span>
+                  </span>
                                 </div>
                             </div>
 
                             <div className="details-info">
-                                <p>
-                                    <strong>Specialities:</strong> {therapistData?.specialties}
-                                </p>
-                                <p>
-                                    <strong>Languages:</strong> {therapistData?.languages}
-                                </p>
-                                <p>
-                                    <strong>Location:</strong> {therapistData?.location}
-                                </p>
+                                <p><strong>Specialities:</strong> {therapistData?.specialties}</p>
+                                <p><strong>Languages:</strong> {therapistData?.languages}</p>
+                                <p><strong>Location:</strong> {therapistData?.location}</p>
                                 <div className="about">
                                     <strong>About</strong>
                                     <p>{therapistData?.about || "No bio available."}</p>
@@ -188,40 +188,45 @@ const TherapistPage = () => {
                                     </div>
                                 ))}
                             </div>
+
                             {selectedDateIndex !== null && (
                                 <div className="slot-selector">
-                                    {hours.map((hour, idx) => (
-                                        <button
-                                            key={idx}
-                                            className={`slot-btn ${selectedSlot === idx ? "selected-slot" : ""}`}
-                                            onClick={() => setSelectedSlot(idx)}
-                                        >
-                                            {hour}
-                                        </button>
-                                    ))}
+                                    {availableSlots.length > 0 ? (
+                                        availableSlots.map((hour, idx) => (
+                                            <button
+                                                key={idx}
+                                                className={`slot-btn ${selectedSlot === idx ? "selected-slot" : ""}`}
+                                                onClick={() => setSelectedSlot(idx)}
+                                            >
+                                                {hour}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <p>No available slots for this day.</p>
+                                    )}
                                 </div>
                             )}
+
                             {selectedSlot !== null && (
                                 <button
                                     className="book-btn"
-                                    onClick={async () => {
-                                        const selectedDate = availableDates[selectedDateIndex];
-                                        const selectedHour = hours[selectedSlot];
-                                        await createAppointment({
+                                    onClick={() =>
+                                        createAppointment({
                                             therapistId,
                                             patientId: currentUser.uid,
                                             date: selectedDate,
-                                            time: selectedHour,
-                                            fee:therapistData?.feeIndividual,
-                                        });
-                                        alert("Appointment request sent to therapist!");
-                                        setSelectedDateIndex(null);
-                                        setSelectedSlot(null);
-                                    }}
+                                            time: availableSlots[selectedSlot],
+                                            fee: therapistData?.feeIndividual,
+                                            availability,
+                                            setAvailability,
+                                            resetSelection,
+                                        })
+                                    }
                                 >
                                     Book an appointment
                                 </button>
                             )}
+
                         </div>
                     )}
 
@@ -232,8 +237,6 @@ const TherapistPage = () => {
             </div>
         </div>
     );
-
-
 };
 
 export default TherapistPage;

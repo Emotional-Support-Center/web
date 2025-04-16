@@ -9,14 +9,20 @@ const monthNames = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+const hours = [
+    "09:00", "09:30", "10:00", "10:30",
+    "11:00", "11:30", "12:00", "12:30",
+    "13:00", "13:30", "14:00", "14:30",
+    "15:00", "15:30", "16:00", "16:30", "17:00"
+];
+
 const Calendar = ({ isTherapist }) => {
     const { currentUser, userRole } = useAuth();
     const today = new Date();
     const dayRefs = useRef([]);
     const [year, setYear] = useState(today.getFullYear());
     const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
-    const [availableDates, setAvailableDates] = useState([]);
-    const [busyDates, setBusyDates] = useState([]);
+    const [availability, setAvailability] = useState({});
     const [popupDay, setPopupDay] = useState(null);
 
     useEffect(() => {
@@ -24,7 +30,7 @@ const Calendar = ({ isTherapist }) => {
         fetchAvailability();
 
         const handleClickOutside = (e) => {
-            if (!e.target.closest('.calendar-day')) {
+            if (!e.target.closest('.calendar-day') && !e.target.closest('.popup-selector')) {
                 setPopupDay(null);
             }
         };
@@ -49,33 +55,33 @@ const Calendar = ({ isTherapist }) => {
         const ref = doc(db, 'availability', currentUser.uid);
         const snap = await getDoc(ref);
         if (snap.exists()) {
-            const data = snap.data();
-            setAvailableDates(data.available || []);
-            setBusyDates(data.busy || []);
+            setAvailability(snap.data());
         }
     };
 
-    const updateAvailability = async (dateStr, status) => {
-        let updatedAvailable = [...availableDates];
-        let updatedBusy = [...busyDates];
+    const updateTimeSlotStatus = async (dateStr, hour, status) => {
+        const ref = doc(db, 'availability', currentUser.uid);
+        const snap = await getDoc(ref);
+        const data = snap.exists() ? snap.data() : {};
 
-        updatedAvailable = updatedAvailable.filter((d) => d !== dateStr);
-        updatedBusy = updatedBusy.filter((d) => d !== dateStr);
+        const dayData = data[dateStr] || { available: [], busy: [] };
 
-        if (status === 'available') updatedAvailable.push(dateStr);
-        if (status === 'busy') updatedBusy.push(dateStr);
+        dayData.available = dayData.available.filter(h => h !== hour);
+        dayData.busy = dayData.busy.filter(h => h !== hour);
 
-        setAvailableDates(updatedAvailable);
-        setBusyDates(updatedBusy);
+        if (!dayData[status].includes(hour)) {
+            dayData[status].push(hour);
+            dayData[status].sort(); // optional: keep time order
+        }
 
-        await setDoc(doc(db, 'availability', currentUser.uid), {
-            available: updatedAvailable,
-            busy: updatedBusy,
-        });
+        await setDoc(ref, { [dateStr]: dayData }, { merge: true }); // ✅ only update that date
+        setAvailability(prev => ({ ...prev, [dateStr]: dayData }));
+        setPopupDay(null);
     };
 
+
     const handleDayClick = (day, month, year, e) => {
-        e.stopPropagation(); // popup dışı tıklamada kapanmasın
+        e.stopPropagation();
         const clickedDate = new Date(year, month, day);
         const isToday =
             today.getDate() === day &&
@@ -87,14 +93,6 @@ const Calendar = ({ isTherapist }) => {
         if (isTherapist && userRole === 'therapist') {
             setPopupDay({ day, month, year });
         }
-    };
-
-    const handleStatusSelect = (status) => {
-        if (!popupDay) return;
-        const { day, month, year } = popupDay;
-        const dateStr = `${year}-${month + 1}-${day}`;
-        updateAvailability(dateStr, status);
-        setPopupDay(null);
     };
 
     const generateCalendar = useMemo(() => {
@@ -116,16 +114,13 @@ const Calendar = ({ isTherapist }) => {
                 {week.map(({ month, day }, dIndex) => {
                     const index = wIndex * 7 + dIndex;
                     const refDate = new Date(year, month, day);
-
                     const isToday =
                         today.getDate() === day &&
                         today.getMonth() === month &&
                         today.getFullYear() === year;
-
                     const isPast = refDate < today && !isToday;
                     const dateStr = `${year}-${month + 1}-${day}`;
-                    const isAvailable = availableDates?.includes(dateStr);
-                    const isBusy = busyDates?.includes(dateStr);
+                    const dayData = availability[dateStr] || {};
                     const showMonthLabel = day === 1;
 
                     return (
@@ -145,16 +140,22 @@ const Calendar = ({ isTherapist }) => {
                                 <span className="new-month-label">{monthNames[month]}</span>
                             )}
 
-                            {isAvailable && <span className="tag available">Available</span>}
-                            {isBusy && <span className="tag busy">Busy</span>}
+                            {dayData?.available?.length > 0 && <span className="tag available">Available</span>}
+                            {dayData?.busy?.length > 0 && <span className="tag busy">Busy</span>}
 
                             {popupDay &&
                                 popupDay.day === day &&
                                 popupDay.month === month &&
                                 popupDay.year === year && (
                                     <div className="popup-selector">
-                                        <button onClick={() => handleStatusSelect('available')}>Available</button>
-                                        <button onClick={() => handleStatusSelect('busy')}>Busy</button>
+                                        <p className="popup-header">Select time slots:</p>
+                                        {hours.map((hour) => (
+                                            <div key={hour} className="hour-slot">
+                                                <span>{hour}</span>
+                                                <button onClick={() => updateTimeSlotStatus(dateStr, hour, 'available')}>Available</button>
+                                                <button onClick={() => updateTimeSlotStatus(dateStr, hour, 'busy')}>Busy</button>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                         </div>
@@ -162,7 +163,7 @@ const Calendar = ({ isTherapist }) => {
                 })}
             </div>
         ));
-    }, [year, availableDates, busyDates, popupDay]);
+    }, [year, availability, popupDay]);
 
     return (
         <div className="calendar-body">
