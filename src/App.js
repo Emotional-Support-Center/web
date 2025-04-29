@@ -14,6 +14,7 @@ import TherapistSettings from "./routes/TherapistSettings";
 import TherapistSearch from './routes/TherapistSearch';
 import AdminPage from './routes/AdminPage';
 import AdminAuth from './routes/AdminAuth';
+import PaymentPage from './routes/PaymentPage';
 
 function Layout({ children }) {
     return (
@@ -74,11 +75,11 @@ function App() {
                     } />
 
                     <Route path="/mypage" element={
-                        <ProtectedRoute allowedRoles={["therapist"]}>
+                        // <ProtectedRoute allowedRoles={["therapist"]}>
                             <Layout>
                                 <TherapistPage />
                             </Layout>
-                        </ProtectedRoute>
+                        // </ProtectedRoute>
                     } />
 
                     <Route path="/account/:id" element={
@@ -90,9 +91,7 @@ function App() {
                     } />
                     <Route path="/payment/:appointmentId" element={
                         <ProtectedRoute allowedRoles={["patient"]}>
-                            <Layout>
-                                {/* <PaymentPage /> */}
-                            </Layout>
+                                <PaymentPage />
                         </ProtectedRoute>
                     } />
                     <Route path="/therapists" element={
