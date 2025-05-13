@@ -5,8 +5,14 @@ import '../css/JitsiMeeting.css';
 function loadJitsiScript() {
   return new Promise((resolve, reject) => {
     if (window.JitsiMeetExternalAPI) return resolve();
+    const existing = document.getElementById('jitsi-api');
+    if (existing) {
+      existing.addEventListener('load', resolve);
+      existing.addEventListener('error', reject);
+      return;
+    }
     const script = document.createElement('script');
-    script.src = 'https://meet.jit.si/external_api.js';
+    script.src = 'https://meet.ffmuc.net/external_api.js';  // ← FFmuc no-lobby instance
     script.id = 'jitsi-api';
     script.async = true;
     script.onload = resolve;
@@ -20,32 +26,29 @@ export default function JitsiMeeting({ roomName, displayName, onEnd }) {
   const apiRef       = useRef(null);
   const [ready, setReady] = useState(false);
 
+  // 1) load the public FFmuc API
   useEffect(() => {
     loadJitsiScript()
       .then(() => setReady(true))
-      .catch(err => console.error('Jitsi script load failed', err));
+      .catch(err => console.error('Failed to load Jitsi script', err));
   }, []);
 
+  // 2) once loaded, spin up the meeting
   useEffect(() => {
     if (!ready || !containerRef.current) return;
 
-    const domain = 'meet.jit.si';
+    const domain = 'meet.ffmuc.net';      // ← use the FFmuc domain here
     const options = {
       roomName,
       parentNode: containerRef.current,
       interfaceConfigOverwrite: {
-        // only show these toolbar buttons
         TOOLBAR_BUTTONS: [
           'microphone', 'camera', 'hangup',
           'chat', 'raisehand', 'tileview', 'fullscreen'
         ]
       },
       configOverwrite: {
-        // skip the “preview” page entirely
-        prejoinPageEnabled: false,
-        // turn off any “waiting for moderator” lobby
-        lobbyEnabled: false,
-        // disable deep-linking prompts
+        prejoinPageEnabled: false,      // skip the “join preview”
         disableDeepLinking: true
       },
       userInfo: { displayName }
@@ -63,7 +66,11 @@ export default function JitsiMeeting({ roomName, displayName, onEnd }) {
   }, [ready, roomName, displayName, onEnd]);
 
   if (!ready) {
-    return <div className="loading-placeholder">Loading meeting…</div>;
+    return (
+      <div className="loading-placeholder">
+        Loading meeting…
+      </div>
+    );
   }
 
   return (
