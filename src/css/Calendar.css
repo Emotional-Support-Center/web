@@ -1,319 +1,207 @@
 .calendar-container {
     max-height: 100%;
-    background-color: #ffffff;
+    background: #fff;
     padding: 24px;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.calendar-controls {
-    display: flex;
-    gap: 12px;
-}
-
-.calendar-controls select,
-.calendar-controls button {
-    padding: 10px 16px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.calendar-controls button {
-    background-color: #3b82f6;
-    color: white;
-    font-weight: bold;
-    border: none;
-}
-
-.calendar-controls button:hover {
-    background-color: #2563eb;
-}
-
-.calendar-year {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.calendar-year span {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.calendar-year button {
-    background-color: #3b82f6;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.calendar-year button:hover {
-    background-color: #2563eb;
-}
-
-.calendar-days-of-week {
+  }
+  
+  /* Weekday headers */
+  .calendar-days-of-week {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7,1fr);
     text-align: center;
     font-weight: bold;
     color: #666;
     border-bottom: 1px solid #ddd;
     padding-bottom: 8px;
     margin-bottom: 16px;
-    font-size: 16px;
-}
-
-.calendar-body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.calendar-week {
+  }
+  
+  /* Container of all weeks */
+  .calendar-week {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7,1fr);
     gap: 12px;
-}
-
-.calendar-day {
-    background-color: white;
+  }
+  
+  /* Each day cell */
+  .calendar-day {
+    position: relative;
+    background: #fff;
     border: 1px solid #e2e2e2;
     border-radius: 12px;
     height: 100px;
-    position: relative;
     font-size: 16px;
     font-weight: 500;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: border 0.2s;
-}
-
-.calendar-day:hover {
+  }
+  .calendar-day:hover {
     border: 2px solid #3b82f6;
-}
-
-.calendar-day-number {
+  }
+  .past {
+    background: #f2f2f2;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  
+  /* Day number */
+  .calendar-day-number {
     position: absolute;
     top: 10px;
     left: 12px;
-}
-
-.today {
-    background-color: #3b82f6;
-    color: white;
+  }
+  .today {
+    position: absolute;
+    top: 10px;
+    left: 12px;
     width: 28px;
     height: 28px;
+    background: #3b82f6;
+    color: #fff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 13px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    left: 12px;
-}
-
-.new-month-label {
+  }
+  
+  /* Month label on the first of each month */
+  .new-month-label {
     position: absolute;
     bottom: 10px;
     left: 12px;
     font-size: 14px;
     font-weight: bold;
     color: #ccc;
-}
-.past {
-    background-color: #f2f2f2;
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-.calendar-day.available::after {
-    content: "✓";
-    color: green;
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.calendar-day.busy::after {
-    content: "✕";
-    color: red;
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.availability-actions {
-    margin-top: 20px;
-    background-color: #f9f9f9;
-    padding: 16px;
-    border-radius: 12px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-.tag {
+  }
+  
+  /* Small colored dots at the bottom-left */
+  .slot-indicators {
     position: absolute;
     bottom: 6px;
-    right: 6px;
-    font-size: 12px;
+    left: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  /* The dots */
+  .slot-dot {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .slot-dot.available   { background: #22c55e; }
+  .slot-dot.busy        { background: #ef4444; }
+  .slot-dot.appointment { background: #9c27b0; }
+  
+  /* Patient statuses */
+  .slot-dot.pending        { background: orange; }
+  .slot-dot.approved       { background: green; }
+  .slot-dot.waitingPayment { background: crimson; }
+  .slot-dot.done           { background: gray; }
+  
+  /* Tooltip hidden by default */
+  .slot-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 6px;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
     padding: 4px 8px;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
-}
-
-.tag.available {
-    background-color: #22c55e;
-}
-
-.tag.busy {
-    background-color: #ef4444;
-}
-
-.popup-selector {
+    font-size: 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .slot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 4px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.75) transparent transparent transparent;
+  }
+  /* Show on hover */
+  .slot-dot:hover .slot-tooltip {
+    display: block;
+  }
+  
+  /* Pop-up for adding slots */
+  .popup-selector {
     position: absolute;
     bottom: 10px;
     left: 10px;
     z-index: 10;
-    background-color: white;
+    background: #fff;
     border: 1px solid #ccc;
     padding: 6px 10px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     display: flex;
     gap: 6px;
-}
-
-.popup-selector button {
-    background-color: #3b82f6;
-    color: white;
+  }
+  .popup-selector button {
+    background: #3b82f6;
+    color: #fff;
     border: none;
     padding: 4px 10px;
     font-size: 12px;
     border-radius: 6px;
     cursor: pointer;
-}
-
-.popup-selector button:hover {
-    background-color: #2563eb;
-}
-
-.slot-indicators {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    position: absolute;
-    bottom: 6px;
-    left: 6px;
+  }
+  .popup-selector button:hover {
+    background: #2563eb;
   }
   
-  .slot-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 3px;
-    position: relative;
-    margin: 2px;
-    cursor: default;
-  }
-  
-  .slot-dot.available {
-    background-color: #22c55e;
-  }
-  
-  .slot-dot.busy {
-    background-color: #ef4444;
-  }
-  
-  .slot-tooltip {
-    visibility: hidden;
-    opacity: 0;
-    width: max-content;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 4px 8px;
-    border-radius: 6px;
-    position: absolute;
-    z-index: 999;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    font-size: 12px;
-    transition: opacity 0.2s ease;
-  }
-  
-  .slot-dot:hover .slot-tooltip {
-    visibility: visible;
-    opacity: 1;
-  }
-  
+  /* Confirm deletion modal */
   .confirm-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    inset: 0;
+    background: rgba(0,0,0,0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     z-index: 999;
   }
-  
   .confirm-modal {
-    background: white;
+    background: #fff;
     padding: 20px 24px;
     border-radius: 12px;
     max-width: 400px;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
-  
   .modal-buttons {
     display: flex;
     justify-content: space-around;
     margin-top: 16px;
   }
-  
   .btn-confirm {
-    background-color: #ef4444;
-    color: white;
+    background: #ef4444;
+    color: #fff;
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
   }
-  
   .btn-cancel {
-    background-color: #ddd;
+    background: #ddd;
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
