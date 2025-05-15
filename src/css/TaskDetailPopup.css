@@ -1,0 +1,98 @@
+.task-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.task-popup-content {
+    background: #ffffff;
+    padding: 30px 25px;
+    border-radius: 16px;
+    width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+    animation: popupFade 0.25s ease-out;
+}
+
+@keyframes popupFade {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.popup-description {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.popup-type {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+input[type="file"] {
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+.popup-btn {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.popup-btn:hover {
+    background-color: #4338ca;
+}
+
+.view-btn {
+    background-color: #10b981;
+}
+
+.view-btn:hover {
+    background-color: #059669;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #333;
+}

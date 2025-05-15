@@ -1,0 +1,234 @@
+/* Container & Search Bar */
+.therapist-search-container {
+  padding: 30px 30px 20px;
+  max-width: 1200px;
+  margin-left: 220px; /* account for fixed sidebar */
+  margin-top: 20px;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+}
+
+.search-input {
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+  border-color: #4481eb;
+  box-shadow: 0 0 0 3px rgba(68, 129, 235, 0.2);
+  outline: none;
+}
+
+/* Loading & Empty States */
+.loading-spinner,
+.error-message,
+.no-results {
+  text-align: center;
+  color: #666;
+  margin: 20px 0;
+  font-size: 16px;
+}
+
+/* Rating Filter */
+.rating-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.rating-filter label {
+  font-weight: 500;
+}
+
+.rating-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.rating-filter select:focus {
+  border-color: #4481eb;
+  outline: none;
+}
+
+/* Fee Filter */
+.fee-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.fee-range {
+  flex: 1;
+  min-width: 240px;
+}
+
+.fee-range label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.range-sliders {
+  display: flex;
+  gap: 6px;
+}
+
+.range-sliders input[type="range"] {
+  flex: 1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+/* Webkit track & thumb styling */
+.range-sliders input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.range-sliders input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4481eb;
+  margin-top: -5px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.range-sliders input[type="range"]::-webkit-slider-thumb:hover {
+  background: #336fd1;
+  transform: scale(1.2);
+}
+
+/* Firefox track & thumb styling */
+.range-sliders input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.range-sliders input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4481eb;
+  border: none;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.range-sliders input[type="range"]::-moz-range-thumb:hover {
+  background: #336fd1;
+  transform: scale(1.2);
+}
+
+/* Checkbox Filters */
+.filters {
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border: none;
+  padding: 0;
+}
+
+.filters legend {
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.filters label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filters label:hover {
+  background-color: #eaf2ff;
+}
+
+.filters input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Therapist Cards Grid */
+.therapist-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+/* Individual Card */
+.therapist-card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.therapist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.therapist-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.therapist-card h3 {
+  margin: 8px 0 4px;
+  font-size: 18px;
+  color: #222;
+}
+
+.therapist-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.therapist-card p strong {
+  color: #333;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .therapist-search-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .therapist-cards {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
